@@ -1,0 +1,46 @@
+swagger: "2.0"
+info:
+  title: Wishlist API
+  description: API for manage user wishlist.
+  version: 1.0.0
+
+host: blablabla.com
+basePath: /api/v1
+schemes:
+  - https
+
+paths:
+  /wishlist:
+    post:
+      summary: Save one product to client wishlist.
+      produces:
+        - application/json
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Product client to save in wishlist"
+          required: true
+          schema:
+            $ref: "#/definitions/Wishlist"
+      responses:
+        201:
+          description: Created
+
+
+definitions:
+  Wishlist:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/Product'
+  Product:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
