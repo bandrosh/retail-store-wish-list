@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: integration-test
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      authentication-database: admin
+      username: root
+      password: pass
+      database: wishlist_db
+
