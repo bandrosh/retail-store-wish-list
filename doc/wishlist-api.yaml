@@ -21,26 +21,51 @@ paths:
           description: "Product client to save in wishlist"
           required: true
           schema:
-            $ref: "#/definitions/Wishlist"
+            $ref: "#/definitions/WishlistRequest"
       responses:
         201:
           description: Created
 
+  /wishlist/product/{productId}:
+    delete:
+      summary: Delete specific product from client wishlist.
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: "Client identifier"
+          required: true
+          schema:
+            $ref: "#/definitions/Client"
+        - in: path
+          name: productId
+          description: Product ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: Ok Product Deleted
 
 definitions:
-  Wishlist:
+  WishlistRequest:
     type: object
     properties:
       id:
         type: string
-        format: uuid
-      products:
-        type: array
+      product:
+        type: object
         items:
           $ref: '#/definitions/Product'
+
+  Client:
+    type: object
+    properties:
+      id:
+        type: string
+
   Product:
     type: object
     properties:
       id:
         type: string
-        format: uuid
