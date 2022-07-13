@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE) // 503
-    @ExceptionHandler(DatabaseException.class)
-    @ResponseBody
-    public ErrorInformation databaseCannotSaveObject(DatabaseException e) {
-        return new ErrorInformation("Content is not supported.", e);
-    }
-
     @ResponseStatus(HttpStatus.BAD_REQUEST) // 400
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseBody
     public ErrorInformation httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e) {
         return new ErrorInformation("Bad Request.", e);
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND) // 404
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseBody
+    public ErrorInformation notFoundExceptionHandler(NotFoundException e) {
+        return new ErrorInformation("Not Found Exception.", e);
     }
 }

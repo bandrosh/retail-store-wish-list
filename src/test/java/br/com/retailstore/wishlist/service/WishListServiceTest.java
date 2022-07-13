@@ -2,7 +2,6 @@ package br.com.retailstore.wishlist.service;
 
 import br.com.retailstore.wishlist.domain.Product;
 import br.com.retailstore.wishlist.domain.WishList;
-import br.com.retailstore.wishlist.exception.DatabaseException;
 import br.com.retailstore.wishlist.repository.WishListRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +12,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -79,20 +76,5 @@ class WishListServiceTest {
 
         verify(wishListRepository, times(1)).findById(anyString());
         verify(wishListRepository, times(1)).save(any());
-    }
-
-    @Test
-    void whenTryToSaveClientWishlistAndDatabaseThrowOneException() {
-        var wishlist = new WishList("client-01", new HashSet<>() {{
-            add(new Product("Product-01"));
-        }});
-
-        when(wishListRepository.findById(anyString())).thenThrow(new RuntimeException("Timeout database"));
-
-        var result = assertThrows(DatabaseException.class,
-                () -> wishListService.saveClientWishList(wishlist));
-
-        assertTrue(result.getMessage()
-                         .contains("Cannot save client wishlist product."));
     }
 }
