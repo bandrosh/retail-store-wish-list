@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST) // 400
-    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ExceptionHandler({HttpMessageNotReadableException.class, EmptyValueException.class})
     @ResponseBody
-    public ErrorInformation httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e) {
+    public ErrorInformation httpMessageNotReadableExceptionHandler(Exception e) {
         return new ErrorInformation("Bad Request.", e);
     }
 

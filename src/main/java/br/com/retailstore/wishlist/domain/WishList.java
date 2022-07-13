@@ -13,10 +13,10 @@ public record WishList(@Id String client, HashSet<Product> products) {
         Objects.requireNonNull(products);
     }
 
-    public static WishList of(WishListDTO wishListDTO) {
+    public static WishList of(String client, Product product) {
         var products = new HashSet<Product>();
-        products.add(wishListDTO.product());
+        products.add(product);
 
-        return new WishList(wishListDTO.client(), products);
+        return new WishList(client, products);
     }
 }

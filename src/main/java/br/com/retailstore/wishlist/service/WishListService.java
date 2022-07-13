@@ -7,7 +7,6 @@ import br.com.retailstore.wishlist.repository.WishListRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class WishListService {
@@ -17,35 +16,31 @@ public class WishListService {
         this.wishListRepository = wishListRepository;
     }
 
-    public void saveClientWishList(WishList wishList) {
-        if (notExistClient(wishList.client())) {
-            wishListRepository.save(wishList);
+    public void saveClientWishList(String clientId, Product product) {
+        if (notExistClient(clientId)) {
+            wishListRepository.save(WishList.of(clientId, product));
         } else {
-            var clientWishListProducts = getClientWishListProducts(wishList.client());
+            var clientWishListProducts = getClientWishListProducts(clientId);
 
-            if (!wishList.products()
-                         .containsAll(clientWishListProducts)) {
-                wishList.products()
-                        .addAll(clientWishListProducts);
-                wishListRepository.save(wishList);
+            if (!clientWishListProducts.contains(product)) {
+                clientWishListProducts.add(product);
+                wishListRepository.save(new WishList(clientId, clientWishListProducts));
             }
         }
     }
 
-    public void deleteProductFromClientWishList(WishList wishList) {
-        if(notExistClient(wishList.client())) {
+    public void deleteProductFromClientWishList(String clientId, Product product) {
+        if(notExistClient(clientId)) {
             throw new NotFoundException("Client not Found.");
         } else {
-            var clientWishListProducts = getClientWishListProducts(wishList.client());
+            var clientWishListProducts = getClientWishListProducts(clientId);
 
-            if (clientWishListProducts.isEmpty()) {
-                wishListRepository.delete(wishList);
+            if (clientWishListProducts.isEmpty() || clientWishListProducts.size() == 1) {
+                wishListRepository.delete(WishList.of(clientId, product));
             } else {
-                if (!wishList.products()
-                             .containsAll(clientWishListProducts)) {
-                    wishList.products()
-                            .removeAll(clientWishListProducts);
-                    wishListRepository.save(wishList);
+                if (clientWishListProducts.contains(product)) {
+                    clientWishListProducts.remove(product);
+                    wishListRepository.save(new WishList(clientId, clientWishListProducts));
                 } else {
                     throw new NotFoundException("Product not found.");
                 }
@@ -57,7 +52,7 @@ public class WishListService {
         return !wishListRepository.existsById(client);
     }
 
-    private Set<Product> getClientWishListProducts(String client) {
+    private HashSet<Product> getClientWishListProducts(String client) {
         var products = wishListRepository.findById(client);
 
         if (products.isEmpty()) return new HashSet<>();
