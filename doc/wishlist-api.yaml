@@ -51,7 +51,7 @@ definitions:
   WishlistRequest:
     type: object
     properties:
-      id:
+      client:
         type: string
       product:
         type: object
@@ -61,7 +61,7 @@ definitions:
   Client:
     type: object
     properties:
-      id:
+      client:
         type: string
 
   Product:
