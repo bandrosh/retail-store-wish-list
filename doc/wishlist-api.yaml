@@ -21,7 +21,7 @@ paths:
           description: "Product client to save in wishlist"
           required: true
           schema:
-            $ref: "#/definitions/WishlistRequest"
+            $ref: "#/definitions/WishlistDTO"
         - in: header
           name: client
           description: "client identifier"
@@ -56,6 +56,33 @@ paths:
               $ref: "#/definitions/PagedProductResponse"
 
   /products/{productId}:
+    get:
+      summary: Get product in client wishlist.
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: productId
+          description: Product ID
+          required: true
+          type: string
+        - in: header
+          name: client
+          description: "client identifier"
+          type: string
+          required: true
+
+      responses:
+        200:
+          description: OK
+          schema:
+            items:
+              $ref: "#/definitions/WishlistDTO"
+        404:
+          description: Product Not Found
+          schema:
+            items:
+              $ref: "#/definitions/ErrorResponse"
     delete:
       summary: Delete specific product from client wishlist.
       produces:
@@ -75,9 +102,14 @@ paths:
       responses:
         200:
           description: Ok Product Deleted
+        404:
+          description: Product Not Found
+          schema:
+            items:
+              $ref: "#/definitions/ErrorResponse"
 
 definitions:
-  WishlistRequest:
+  WishlistDTO:
     type: object
     properties:
       product:
@@ -104,3 +136,11 @@ definitions:
         type: integer
       lastPage:
         type: boolean
+
+  ErrorResponse:
+    type: object
+    properties:
+      message:
+        type: string
+      exception:
+        type: string
