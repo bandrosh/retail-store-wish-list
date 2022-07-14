@@ -22,3 +22,9 @@ java -jar <application-name>
 API Documentation in :
 [doc](https://github.com/bandrosh/https://github.com/bandrosh/retail-store-wish-list/doc/wishlist-api.yaml)
 
+### Future Work
+```
+-API dockerized for build ecossystem
+-Changed TDD/Unitary tests to BDD
+-Dockerize for integration tests and use flyway to setup new Database
+``` 
