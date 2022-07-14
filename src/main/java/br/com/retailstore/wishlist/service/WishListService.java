@@ -41,20 +41,17 @@ public class WishListService {
             throw new NotFoundException("Client not Found.");
         } else {
             var clientWishListProducts = getClientWishListProducts(clientId);
+            var existProductInClientList = clientWishListProducts.contains(product);
 
-            if (clientWishListProducts.isEmpty() || clientWishListProducts.size() == 1) {
-                if (clientWishListProducts.contains(product)) {
-                    wishListRepository.delete(WishList.of(clientId, product));
-                } else {
-                    throw new NotFoundException("Product not found.");
-                }
+            if (!existProductInClientList) {
+                throw new NotFoundException("Product not found.");
+            }
+
+            if (clientWishListProducts.size() == 1) {
+                wishListRepository.delete(WishList.of(clientId, product));
             } else {
-                if (clientWishListProducts.contains(product)) {
-                    clientWishListProducts.remove(product);
-                    wishListRepository.save(new WishList(clientId, clientWishListProducts));
-                } else {
-                    throw new NotFoundException("Product not found.");
-                }
+                clientWishListProducts.remove(product);
+                wishListRepository.save(new WishList(clientId, clientWishListProducts));
             }
         }
     }
