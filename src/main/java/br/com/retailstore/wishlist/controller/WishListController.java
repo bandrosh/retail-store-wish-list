@@ -47,12 +47,14 @@ public class WishListController {
         var lastPage = isProductsLastPage(productsPaged.size(),
                 wishlistConfiguration.getWishlistMaxPageSize());
 
-        return new ProductsPagedResponse(productsPaged, page,
-                productsPaged.size(), lastPage);
+        return new ProductsPagedResponse(productsPaged, page, productsPaged.size(), lastPage);
     }
 
-    private boolean isProductsLastPage(int numberPageElements, long numberMaxPageElements) {
-        return numberPageElements < numberMaxPageElements;
+    @GetMapping("/products/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public WishListDTO getClientProductFromWishListByProductId(@PathVariable("id") String productId,
+                                                        @RequestHeader("client") ClientDTO clientDTO) {
+        return wishListService.getClientProductFromWishListByProduct(clientDTO.client(), new Product(productId));
     }
 
     @DeleteMapping("/products/{id}")
@@ -60,5 +62,9 @@ public class WishListController {
     public void deleteProductFromClientWishList(@PathVariable("id") String productId,
                                                 @RequestHeader("client") ClientDTO clientDTO) {
         wishListService.deleteProductFromClientWishList(clientDTO.client(), new Product(productId));
+    }
+
+    private boolean isProductsLastPage(int numberPageElements, long numberMaxPageElements) {
+        return numberPageElements < numberMaxPageElements;
     }
 }

@@ -2,6 +2,7 @@ package br.com.retailstore.wishlist.service;
 
 import br.com.retailstore.wishlist.domain.Product;
 import br.com.retailstore.wishlist.domain.WishList;
+import br.com.retailstore.wishlist.domain.WishListDTO;
 import br.com.retailstore.wishlist.exception.NotFoundException;
 import br.com.retailstore.wishlist.repository.WishListRepository;
 import br.com.retailstore.wishlist.repository.impl.ProductsWishListQueryDAORepositoryImpl;
@@ -182,7 +183,7 @@ class WishListServiceTest {
                     add(new Product("Product-02"));
                 }});
 
-        when(productsWishListQueryRepository.getProductsWishListByClient(any(), any()))
+        when(productsWishListQueryRepository.getPagedProductsWishListByClient(any(), any()))
                 .thenReturn(existedData.products()
                                        .stream()
                                        .toList());
@@ -191,7 +192,7 @@ class WishListServiceTest {
                 PageRequest.of(0, 3));
 
         verify(productsWishListQueryRepository, times(1))
-                .getProductsWishListByClient(any(), any());
+                .getPagedProductsWishListByClient(any(), any());
         assertEquals(2, result.size());
     }
 
@@ -203,15 +204,42 @@ class WishListServiceTest {
                     add(new Product("Product-02"));
                 }});
 
-        when(productsWishListQueryRepository.getProductsWishListByClient(any(), any()))
+        when(productsWishListQueryRepository.getPagedProductsWishListByClient(any(), any()))
                 .thenReturn(new ArrayList<>());
 
         var result = wishListService.getProductsWishListByClient("client-01",
                 PageRequest.of(0, 3));
 
         verify(productsWishListQueryRepository, times(1))
-                .getProductsWishListByClient(any(), any());
+                .getPagedProductsWishListByClient(any(), any());
 
         assertEquals(0, result.size());
+    }
+
+    @Test
+    void whenGetProductInExistedClientWishListThenReturnProduct() {
+        when(productsWishListQueryRepository.existProductInClientWishList(any(), any()))
+                .thenReturn(true);
+
+        var result = wishListService.getClientProductFromWishListByProduct("client-01",
+                new Product("Product-01"));
+
+        var check = new WishListDTO(new Product("Product-01"));
+
+        assertEquals(check, result);
+        verify(productsWishListQueryRepository, times(1))
+                .existProductInClientWishList(any(), any());
+    }
+
+    @Test
+    void whenGetProductThatNotExistInClientWishListThenThrowNotFoundException() {
+        when(productsWishListQueryRepository.existProductInClientWishList(any(), any()))
+                .thenReturn(false);
+
+        var product = new Product("Product-01");
+
+        assertThrows(NotFoundException.class,
+                () -> wishListService.getClientProductFromWishListByProduct("client-01", product)
+        );
     }
 }

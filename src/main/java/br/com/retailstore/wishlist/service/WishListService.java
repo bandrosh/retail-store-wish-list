@@ -2,6 +2,7 @@ package br.com.retailstore.wishlist.service;
 
 import br.com.retailstore.wishlist.domain.Product;
 import br.com.retailstore.wishlist.domain.WishList;
+import br.com.retailstore.wishlist.domain.WishListDTO;
 import br.com.retailstore.wishlist.exception.NotFoundException;
 import br.com.retailstore.wishlist.repository.WishListRepository;
 import br.com.retailstore.wishlist.repository.impl.ProductsWishListQueryDAORepositoryImpl;
@@ -56,6 +57,21 @@ public class WishListService {
         }
     }
 
+    public List<Product> getProductsWishListByClient(String client, PageRequest pageRequest) {
+        return productsWishListQueryRepository.getPagedProductsWishListByClient(client, pageRequest);
+    }
+
+    public WishListDTO getClientProductFromWishListByProduct(String client, Product product) {
+        var existProductInClientWishlist = productsWishListQueryRepository.
+                existProductInClientWishList(client, product.id());
+
+        if (!existProductInClientWishlist) {
+            throw new NotFoundException("Product not found.");
+        }
+
+        return new WishListDTO(product);
+    }
+
     private boolean notExistClient(String client) {
         return !wishListRepository.existsById(client);
     }
@@ -66,9 +82,5 @@ public class WishListService {
         if (products.isEmpty()) return new HashSet<>();
         return products.get()
                        .products();
-    }
-
-    public List<Product> getProductsWishListByClient(String client, PageRequest pageRequest) {
-        return productsWishListQueryRepository.getProductsWishListByClient(client, pageRequest);
     }
 }
