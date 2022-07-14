@@ -218,4 +218,46 @@ class WishListControllerTest {
                .andExpect(jsonPath("$.totalPageItems").value(4))
                .andExpect(jsonPath("$.lastPage").value(false));
     }
+
+    @Test
+    void whenTryGetProductExistedInClientWishListThenReturnProductAndStatus200() throws Exception {
+        var productId = UUID.randomUUID()
+                            .toString();
+        var client = new ClientDTO(UUID.randomUUID()
+                                       .toString());
+
+        when(wishListService.getClientProductFromWishListByProduct(
+                anyString(), any(Product.class))).thenReturn(new WishListDTO(new Product(productId)));
+
+        mockMvc.perform(get("/api/v1/wishlist/products/{productId}", productId)
+                       .header("client", UUID.randomUUID()
+                                             .toString())
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON)
+                       .content(objectMapper.writeValueAsString(client))
+               )
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.product.id").value(productId));
+    }
+    @Test
+    void whenTryGetProductNotExistedInClientWishListThenReturnStatus404() throws Exception {
+        var productId = UUID.randomUUID()
+                            .toString();
+        var client = new ClientDTO(UUID.randomUUID()
+                                       .toString());
+
+        doThrow(new NotFoundException("Product not Found.")).when(wishListService)
+                                                           .getClientProductFromWishListByProduct(
+                                                                   anyString(), any(Product.class));
+
+        mockMvc.perform(get("/api/v1/wishlist/products/{productId}", productId)
+                       .header("client", UUID.randomUUID()
+                                             .toString())
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON)
+                       .content(objectMapper.writeValueAsString(client))
+               )
+               .andExpect(status().isNotFound());
+    }
+
 }
