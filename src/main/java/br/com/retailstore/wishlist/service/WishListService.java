@@ -43,7 +43,11 @@ public class WishListService {
             var clientWishListProducts = getClientWishListProducts(clientId);
 
             if (clientWishListProducts.isEmpty() || clientWishListProducts.size() == 1) {
-                wishListRepository.delete(WishList.of(clientId, product));
+                if (clientWishListProducts.contains(product)) {
+                    wishListRepository.delete(WishList.of(clientId, product));
+                } else {
+                    throw new NotFoundException("Product not found.");
+                }
             } else {
                 if (clientWishListProducts.contains(product)) {
                     clientWishListProducts.remove(product);
