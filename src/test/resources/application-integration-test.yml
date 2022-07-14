@@ -11,4 +11,4 @@ spring:
       database: wishlist_db
 
 wishlist:
-  page-max-size: 20
+  page-max-size: 3

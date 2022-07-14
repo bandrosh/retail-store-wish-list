@@ -4,15 +4,19 @@ import br.com.retailstore.wishlist.domain.Product;
 import br.com.retailstore.wishlist.domain.WishList;
 import br.com.retailstore.wishlist.exception.NotFoundException;
 import br.com.retailstore.wishlist.repository.WishListRepository;
+import br.com.retailstore.wishlist.repository.impl.ProductsWishListQueryDAORepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,9 +32,13 @@ class WishListServiceTest {
     @MockBean
     WishListRepository wishListRepository;
 
+    @MockBean
+    ProductsWishListQueryDAORepositoryImpl productsWishListQueryRepository;
+
     @BeforeEach
     public void init() {
-        this.wishListService = new WishListService(wishListRepository);
+        this.wishListService = new WishListService(wishListRepository,
+                productsWishListQueryRepository);
     }
 
     @Test
@@ -101,7 +109,8 @@ class WishListServiceTest {
 
         when(wishListRepository.existsById(anyString())).thenReturn(true);
         when(wishListRepository.findById(anyString())).thenReturn(Optional.of(existedData));
-        doNothing().when(wishListRepository).delete(any(WishList.class));
+        doNothing().when(wishListRepository)
+                   .delete(any(WishList.class));
 
         wishListService.deleteProductFromClientWishList("client-01", new Product("Product-01"));
 
@@ -121,7 +130,8 @@ class WishListServiceTest {
 
         when(wishListRepository.existsById(anyString())).thenReturn(true);
         when(wishListRepository.findById(anyString())).thenReturn(Optional.of(existedData));
-        doNothing().when(wishListRepository).delete(any(WishList.class));
+        doNothing().when(wishListRepository)
+                   .delete(any(WishList.class));
 
         wishListService.deleteProductFromClientWishList("client-01", new Product("Product-01"));
 
@@ -141,7 +151,8 @@ class WishListServiceTest {
 
         when(wishListRepository.existsById(anyString())).thenReturn(true);
         when(wishListRepository.findById(anyString())).thenReturn(Optional.of(existedData));
-        doNothing().when(wishListRepository).delete(any(WishList.class));
+        doNothing().when(wishListRepository)
+                   .delete(any(WishList.class));
 
         var checkedProduct = new Product("Product-03");
 
@@ -161,5 +172,46 @@ class WishListServiceTest {
         assertThrows(NotFoundException.class,
                 () -> wishListService.deleteProductFromClientWishList("client-01", product)
         );
+    }
+
+    @Test
+    void whenGetClientProductWishListThenReturnCompleteUserProductList() {
+        var existedData = new WishList("client-01",
+                new HashSet<>() {{
+                    add(new Product("Product-01"));
+                    add(new Product("Product-02"));
+                }});
+
+        when(productsWishListQueryRepository.getProductsWishListByClient(any(), any()))
+                .thenReturn(existedData.products()
+                                       .stream()
+                                       .toList());
+
+        var result = wishListService.getProductsWishListByClient("client-01",
+                PageRequest.of(0, 3));
+
+        verify(productsWishListQueryRepository, times(1))
+                .getProductsWishListByClient(any(), any());
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void whenGetClientWithoutProductInWishListThenReturnEmptyList() {
+        var existedData = new WishList("client-01",
+                new HashSet<>() {{
+                    add(new Product("Product-01"));
+                    add(new Product("Product-02"));
+                }});
+
+        when(productsWishListQueryRepository.getProductsWishListByClient(any(), any()))
+                .thenReturn(new ArrayList<>());
+
+        var result = wishListService.getProductsWishListByClient("client-01",
+                PageRequest.of(0, 3));
+
+        verify(productsWishListQueryRepository, times(1))
+                .getProductsWishListByClient(any(), any());
+
+        assertEquals(0, result.size());
     }
 }
