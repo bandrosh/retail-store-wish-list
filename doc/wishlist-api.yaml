@@ -5,44 +5,73 @@ info:
   version: 1.0.0
 
 host: blablabla.com
-basePath: /api/v1
+basePath: /api/v1/wishlist
 schemes:
   - https
 
 paths:
-  /wishlist:
+  /:
     post:
       summary: Save one product to client wishlist.
       produces:
         - application/json
       parameters:
-        - in: "body"
+        - in: body
           name: "body"
           description: "Product client to save in wishlist"
           required: true
           schema:
             $ref: "#/definitions/WishlistRequest"
+        - in: header
+          name: client
+          description: "client identifier"
+          type: string
+          required: true
+
       responses:
         201:
           description: Created
 
-  /wishlist/product/{productId}:
+  /products:
+    get:
+      summary: Get client products wishlist.
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          type: integer
+          name: page
+          description: "Products client number page request"
+        - in: header
+          name: client
+          description: "client identifier"
+          type: string
+          required: true
+
+      responses:
+        200:
+          description: OK
+          schema:
+            items:
+              $ref: "#/definitions/PagedProductResponse"
+
+  /products/{productId}:
     delete:
       summary: Delete specific product from client wishlist.
       produces:
         - application/json
       parameters:
-        - in: body
-          name: body
-          description: "Client identifier"
+        - in: header
+          name: client
+          description: "client identifier"
+          type: string
           required: true
-          schema:
-            $ref: "#/definitions/Client"
         - in: path
           name: productId
           description: Product ID
           required: true
           type: string
+
       responses:
         200:
           description: Ok Product Deleted
@@ -51,21 +80,27 @@ definitions:
   WishlistRequest:
     type: object
     properties:
-      client:
-        type: string
       product:
         type: object
         items:
           $ref: '#/definitions/Product'
-
-  Client:
-    type: object
-    properties:
-      client:
-        type: string
 
   Product:
     type: object
     properties:
       id:
         type: string
+
+  PagedProductResponse:
+    type: object
+    properties:
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/Product'
+      currentPage:
+        type: integer
+      totalPageItems:
+        type: integer
+      lastPage:
+        type: boolean
