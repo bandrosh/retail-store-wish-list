@@ -5,7 +5,7 @@ import br.com.retailstore.wishlist.domain.WishList;
 import br.com.retailstore.wishlist.domain.WishListDTO;
 import br.com.retailstore.wishlist.exception.NotFoundException;
 import br.com.retailstore.wishlist.repository.WishListRepository;
-import br.com.retailstore.wishlist.repository.impl.ProductsWishListQueryDAORepositoryImpl;
+import br.com.retailstore.wishlist.repository.impl.ProductsWishListQueryDAORepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +16,10 @@ import java.util.List;
 public class WishListService {
     final WishListRepository wishListRepository;
 
-    final ProductsWishListQueryDAORepositoryImpl productsWishListQueryRepository;
+    final ProductsWishListQueryDAORepository productsWishListQueryRepository;
 
     public WishListService(WishListRepository wishListRepository,
-                           ProductsWishListQueryDAORepositoryImpl productsWishListQueryDAO) {
+                           ProductsWishListQueryDAORepository productsWishListQueryDAO) {
         this.wishListRepository = wishListRepository;
         this.productsWishListQueryRepository = productsWishListQueryDAO;
     }
