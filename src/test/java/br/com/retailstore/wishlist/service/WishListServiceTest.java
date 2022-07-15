@@ -5,7 +5,7 @@ import br.com.retailstore.wishlist.domain.WishList;
 import br.com.retailstore.wishlist.domain.WishListDTO;
 import br.com.retailstore.wishlist.exception.NotFoundException;
 import br.com.retailstore.wishlist.repository.WishListRepository;
-import br.com.retailstore.wishlist.repository.impl.ProductsWishListQueryDAORepositoryImpl;
+import br.com.retailstore.wishlist.repository.impl.ProductsWishListQueryDAORepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +34,7 @@ class WishListServiceTest {
     WishListRepository wishListRepository;
 
     @MockBean
-    ProductsWishListQueryDAORepositoryImpl productsWishListQueryRepository;
+    ProductsWishListQueryDAORepository productsWishListQueryRepository;
 
     @BeforeEach
     public void init() {
