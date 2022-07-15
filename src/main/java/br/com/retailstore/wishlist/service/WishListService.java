@@ -5,7 +5,7 @@ import br.com.retailstore.wishlist.domain.WishList;
 import br.com.retailstore.wishlist.domain.WishListDTO;
 import br.com.retailstore.wishlist.exception.NotFoundException;
 import br.com.retailstore.wishlist.repository.WishListRepository;
-import br.com.retailstore.wishlist.repository.impl.ProductsWishListQueryDAORepository;
+import br.com.retailstore.wishlist.repository.ProductsWishListQueryDAORepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
